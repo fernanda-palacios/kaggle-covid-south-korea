@@ -1,0 +1,284 @@
+csc343h-palaci37=> \i full_schema.ddl 
+psql:full_schema.ddl:2: NOTICE:  drop cascades to 6 other objects
+DETAIL:  drop cascades to table patientprofileinfo
+drop cascades to table patientinfectioninfo
+drop cascades to table patientregioninfo
+drop cascades to table searchtrend
+drop cascades to table covidstatovertime
+drop cascades to table policy
+DROP SCHEMA
+CREATE SCHEMA
+SET
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+CREATE TABLE
+csc343h-palaci37=> \i fernanda_import_data.sql 
+SET
+COPY 5164
+COPY 5164
+COPY 5163
+csc343h-palaci37=> \i kamran_import_data.sql 
+SET
+COPY 20
+COPY 121
+COPY 120
+csc343h-palaci37=> \d
+                    List of relations
+    Schema     |         Name         | Type  |  Owner   
+---------------+----------------------+-------+----------
+ projectschema | covidstatovertime    | table | palaci37
+ projectschema | patientinfectioninfo | table | palaci37
+ projectschema | patientprofileinfo   | table | palaci37
+ projectschema | patientregioninfo    | table | palaci37
+ projectschema | policy               | table | palaci37
+ projectschema | searchtrend          | table | palaci37
+(6 rows)
+
+csc343h-palaci37=> select count(*) from covidstatovertime;
+ count 
+-------
+   121
+(1 row)
+
+csc343h-palaci37=> select count(*) from patientinfectioninfo;
+ count 
+-------
+  5163
+(1 row)
+
+csc343h-palaci37=> select count(*) from patientprofileinfo;
+ count 
+-------
+  5164
+(1 row)
+
+csc343h-palaci37=> select count(*) from patientregioninfo;
+ count 
+-------
+  5164
+(1 row)
+
+csc343h-palaci37=> select count(*) from policy;
+ count 
+-------
+    20
+(1 row)
+
+csc343h-palaci37=> select count(*) from searchtrend;
+ count 
+-------
+   120
+(1 row)
+
+csc343h-palaci37=> select * from covidstatovertime limit 5;
+    date    |  test  | negative | confirmed | released 
+------------+--------+----------+-----------+----------
+ 2020-03-02 | 109591 |    71580 |      4212 |       31
+ 2020-03-03 | 125851 |    85484 |      4812 |       34
+ 2020-03-04 | 136707 |   102965 |      5328 |       41
+ 2020-03-05 | 146541 |   118965 |      5766 |       88
+ 2020-03-06 | 164740 |   136624 |      6284 |      108
+(5 rows)
+
+csc343h-palaci37=> select * from patientinfectioninfo  limit 5;
+ patientid  |    infection_case    | infected_by | number_of_contacts | symptom_onset_date 
+------------+----------------------+-------------+--------------------+--------------------
+ 1000000001 | overseas inflow      |             |                 75 | 2020-01-22
+ 1000000002 | overseas inflow      |             |                 31 | 
+ 1000000004 | overseas inflow      |             |                  9 | 2020-01-26
+ 1000000005 | contact with patient | 1000000002  |                  2 | 
+ 1000000006 | contact with patient | 1000000003  |                 43 | 
+(5 rows)
+
+csc343h-palaci37=> select * from patientprofileinfo  limit 5;
+ patientid  |  sex   | age 
+------------+--------+-----
+ 1000000001 | male   | 50s
+ 1000000002 | male   | 30s
+ 1000000003 | male   | 50s
+ 1000000004 | male   | 20s
+ 1000000005 | female | 20s
+(5 rows)
+
+csc343h-palaci37=> select * from patientregioninfo  limit 5;
+ patientid  | country | province |    city     
+------------+---------+----------+-------------
+ 1000000001 | Korea   | Seoul    | Gangseo-gu
+ 1000000002 | Korea   | Seoul    | Jungnang-gu
+ 1000000003 | Korea   | Seoul    | Jongno-gu
+ 1000000004 | Korea   | Seoul    | Mapo-gu
+ 1000000005 | Korea   | Seoul    | Seongbuk-gu
+(5 rows)
+
+csc343h-palaci37=> select * from policy  limit 5;
+ policyid |   type    |         govpolicy          |    detail     | startdate  |  enddate   
+----------+-----------+----------------------------+---------------+------------+------------
+       30 | Social    | Social Distancing Campaign | Strong        | 2020-03-22 | 2020-04-19
+       31 | Social    | Social Distancing Campaign | Weak          | 2020-04-20 | 2020-05-05
+       35 | Education | School Opening Delay       | Kindergarten  | 2020-03-02 | 2020-04-06
+       36 | Education | School Opening Delay       | High School   | 2020-03-02 | 2020-04-06
+       37 | Education | School Opening Delay       | Middle School | 2020-03-02 | 2020-04-06
+(5 rows)
+
+csc343h-palaci37=> select * from searchtrend  limit 5;
+    date    |  cold   | pneumonia | coronavirus 
+------------+---------+-----------+-------------
+ 2020-03-02 |  0.8816 |    0.4408 |    60.86853
+ 2020-03-03 | 0.67934 |   0.39853 |    47.17367
+ 2020-03-04 | 0.82579 |   0.35671 |    39.84053
+ 2020-03-05 | 0.64916 |   0.31726 |    33.24218
+ 2020-03-06 | 0.58625 |   0.28071 |    29.61647
+(5 rows)
+
+csc343h-palaci37=> 
+
+csc343h-badirovk=> \d policy
+             Table "projectschema.policy"
+  Column   |  Type   | Collation | Nullable | Default 
+-----------+---------+-----------+----------+---------
+ policyid  | integer |           | not null | 
+ type      | text    |           | not null | 
+ govpolicy | text    |           | not null | 
+ detail    | text    |           | not null | 
+ startdate | date    |           | not null | 
+ enddate   | date    |           | not null | 
+Indexes:
+    "policy_pkey" PRIMARY KEY, btree (policyid)
+Check constraints:
+    "policy_check" CHECK (startdate < enddate)
+    "policy_startdate_check" CHECK (startdate > '2020-03-01'::date)
+
+csc343h-badirovk=> \d searchtrend
+                Table "projectschema.searchtrend"
+   Column    |       Type       | Collation | Nullable | Default 
+-------------+------------------+-----------+----------+---------
+ date        | date             |           | not null | 
+ cold        | double precision |           | not null | 
+ pneumonia   | double precision |           | not null | 
+ coronavirus | double precision |           | not null | 
+Indexes:
+    "searchtrend_pkey" PRIMARY KEY, btree (date)
+Check constraints:
+    "searchtrend_check" CHECK (cold >= 0::double precision AND pneumonia >= 0::double precision AND coronavirus >= 0::double precision)
+    "searchtrend_date_check" CHECK (date > '2020-03-01'::date)
+
+csc343h-badirovk=> \d covidstatovertime
+       Table "projectschema.covidstatovertime"
+  Column   |  Type   | Collation | Nullable | Default 
+-----------+---------+-----------+----------+---------
+ date      | date    |           | not null | 
+ test      | integer |           | not null | 
+ negative  | integer |           | not null | 
+ confirmed | integer |           | not null | 
+ released  | integer |           | not null | 
+Indexes:
+    "covidstatovertime_pkey" PRIMARY KEY, btree (date)
+Check constraints:
+    "covidstatovertime_check" CHECK (test >= 0 AND negative >= 0 AND confirmed >= 0 AND released >= 0)
+    "covidstatovertime_date_check" CHECK (date > '2020-03-01'::date)
+
+
+
+
+csc343h-palaci37=> \d patientprofileinfo
+              Table "projectschema.patientprofileinfo"
+  Column   |         Type          | Collation | Nullable | Default 
+-----------+-----------------------+-----------+----------+---------
+ patientid | character varying(50) |           | not null | 
+ sex       | character varying(20) |           |          | 
+ age       | character varying(20) |           |          | 
+Indexes:
+    "patientprofileinfo_pkey" PRIMARY KEY, btree (patientid)
+Referenced by:
+    TABLE "patientinfectioninfo" CONSTRAINT "patientinfectioninfo_infected_by_fkey" FOREIGN KEY (infected_by) REFERENCES patientprofileinfo(patientid)
+    TABLE "patientinfectioninfo" CONSTRAINT "patientinfectioninfo_patientid_fkey" FOREIGN KEY (patientid) REFERENCES patientprofileinfo(patientid)
+    TABLE "patientregioninfo" CONSTRAINT "patientregioninfo_patientid_fkey" FOREIGN KEY (patientid) REFERENCES patientprofileinfo(patientid)
+
+csc343h-palaci37=> \d patientinfectioninfo
+                 Table "projectschema.patientinfectioninfo"
+       Column       |         Type          | Collation | Nullable | Default 
+--------------------+-----------------------+-----------+----------+---------
+ patientid          | character varying(50) |           | not null | 
+ infection_case     | text                  |           |          | 
+ infected_by        | character varying(50) |           |          | 
+ number_of_contacts | integer               |           |          | 
+ symptom_onset_date | date                  |           |          | 
+Indexes:
+    "patientinfectioninfo_pkey" PRIMARY KEY, btree (patientid)
+Check constraints:
+    "patientinfectioninfo_number_of_contacts_check" CHECK (number_of_contacts >= 0)
+Foreign-key constraints:
+    "patientinfectioninfo_infected_by_fkey" FOREIGN KEY (infected_by) REFERENCES patientprofileinfo(patientid)
+    "patientinfectioninfo_patientid_fkey" FOREIGN KEY (patientid) REFERENCES patientprofileinfo(patientid)
+
+csc343h-palaci37=> \d patientinfectioninfo
+                 Table "projectschema.patientinfectioninfo"
+       Column       |         Type          | Collation | Nullable | Default 
+--------------------+-----------------------+-----------+----------+---------
+ patientid          | character varying(50) |           | not null | 
+ infection_case     | text                  |           |          | 
+ infected_by        | character varying(50) |           |          | 
+ number_of_contacts | integer               |           |          | 
+ symptom_onset_date | date                  |           |          | 
+Indexes:
+    "patientinfectioninfo_pkey" PRIMARY KEY, btree (patientid)
+Check constraints:
+    "patientinfectioninfo_number_of_contacts_check" CHECK (number_of_contacts >= 0)
+Foreign-key constraints:
+    "patientinfectioninfo_infected_by_fkey" FOREIGN KEY (infected_by) REFERENCES patientprofileinfo(patientid)
+    "patientinfectioninfo_patientid_fkey" FOREIGN KEY (patientid) REFERENCES patientprofileinfo(patientid)
+
+csc343h-palaci37=> 
+
+
+csc343h-badirovk=> \d policy
+             Table "projectschema.policy"
+  Column   |  Type   | Collation | Nullable | Default 
+-----------+---------+-----------+----------+---------
+ policyid  | integer |           | not null | 
+ type      | text    |           | not null | 
+ govpolicy | text    |           | not null | 
+ detail    | text    |           | not null | 
+ startdate | date    |           | not null | 
+ enddate   | date    |           | not null | 
+Indexes:
+    "policy_pkey" PRIMARY KEY, btree (policyid)
+Check constraints:
+    "policy_check" CHECK (startdate < enddate)
+    "policy_startdate_check" CHECK (startdate > '2020-03-01'::date)
+
+csc343h-badirovk=> \d searchtrend
+                Table "projectschema.searchtrend"
+   Column    |       Type       | Collation | Nullable | Default 
+-------------+------------------+-----------+----------+---------
+ date        | date             |           | not null | 
+ cold        | double precision |           | not null | 
+ pneumonia   | double precision |           | not null | 
+ coronavirus | double precision |           | not null | 
+Indexes:
+    "searchtrend_pkey" PRIMARY KEY, btree (date)
+Check constraints:
+    "searchtrend_check" CHECK (cold >= 0::double precision AND pneumonia >= 0::double precision AND coronavirus >= 0::double precision)
+    "searchtrend_date_check" CHECK (date > '2020-03-01'::date)
+
+csc343h-badirovk=> \d covidstatovertime
+       Table "projectschema.covidstatovertime"
+  Column   |  Type   | Collation | Nullable | Default 
+-----------+---------+-----------+----------+---------
+ date      | date    |           | not null | 
+ test      | integer |           | not null | 
+ negative  | integer |           | not null | 
+ confirmed | integer |           | not null | 
+ released  | integer |           | not null | 
+Indexes:
+    "covidstatovertime_pkey" PRIMARY KEY, btree (date)
+Check constraints:
+    "covidstatovertime_check" CHECK (test >= 0 AND negative >= 0 AND confirmed >= 0 AND released >= 0)
+    "covidstatovertime_date_check" CHECK (date > '2020-03-01'::date)
+
+
+
+

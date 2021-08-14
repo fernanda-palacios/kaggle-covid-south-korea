@@ -1,0 +1,195 @@
+-- Q1: what has been the search trend of people over time 
+
+csc343h-palaci37=> \i q1_search_trend.sql 
+DROP VIEW
+CREATE VIEW
+DROP VIEW
+CREATE VIEW
+DROP VIEW
+CREATE VIEW
+ cold_march | pneumonia_march | coronavirus_march 
+------------+-----------------+-------------------
+   19.64762 |         9.00304 |         607.46175
+(1 row)
+
+ cold_april_may | pneumonia_april_may | coronavirus_april_may 
+----------------+---------------------+-----------------------
+        8.94097 |             6.61432 |             297.03866
+(1 row)
+
+ cold_june | pneumonia_june | coronavirus_june 
+-----------+----------------+------------------
+   3.10016 |        3.29486 |         78.62803
+(1 row)
+
+csc343h-palaci37=> 
+
+-- Q2: which groups of people have been most affected - Gender
+
+csc343h-palaci37=> \i q2_gender.sql 
+ count 
+-------
+  5164
+(1 row)
+
+ count 
+-------
+  4042
+(1 row)
+
+  sex   | num_patients |    percentage    
+--------+--------------+------------------
+ female |         2217 | 54.8490846115784
+ male   |         1825 | 45.1509153884216
+(2 rows)
+
+-- Q2: which groups of people have been most affected - Region
+
+csc343h-palaci37=> \i q2_region.sql 
+psql:q2_region.sql:8: NOTICE:  drop cascades to 3 other objects
+DETAIL:  drop cascades to view patientregioninfo_koreancities
+drop cascades to view num_patients_by_city
+drop cascades to view num_patients_and_percentage_by_city
+DROP VIEW
+CREATE VIEW
+psql:q2_region.sql:29: NOTICE:  view "patientregioninfo_koreancities" does not exist, skipping
+DROP VIEW
+CREATE VIEW
+psql:q2_region.sql:40: NOTICE:  view "num_patients_by_city" does not exist, skipping
+DROP VIEW
+CREATE VIEW
+psql:q2_region.sql:50: NOTICE:  view "num_patients_and_percentage_by_city" does not exist, skipping
+DROP VIEW
+CREATE VIEW
+      city       | num_patients | percentage_in_korea 
+-----------------+--------------+---------------------
+ Gyeongsan-si    |          639 |    12.6060366936279
+ Seongnam-si     |          173 |    3.41290195304794
+ Bucheon-si      |          162 |    3.19589662655356
+ Gwanak-gu       |          113 |    2.22923653580588
+ Cheonan-si      |          110 |    2.17005326494378
+ etc             |          110 |    2.17005326494378
+ Yongin-si       |          104 |    2.05168672321957
+ Suwon-si        |          100 |    1.97277569540343
+ Guro-gu         |           85 |    1.67685934109292
+ Gangnam-gu      |           83 |    1.63740382718485
+ Gangseo-gu      |           83 |    1.63740382718485
+ Bupyeong-gu     |           83 |    1.63740382718485
+ Seo-gu          |           78 |    1.53876504241468
+ Gumi-si         |           78 |    1.53876504241468
+ Gunpo-si        |           75 |    1.47958177155257
+ Bonghwa-gun     |           71 |    1.40067074373644
+ Yangcheon-gu    |           71 |    1.40067074373644
+ Michuhol-gu     |           69 |    1.36121522982837
+ Anyang-si       |           63 |    1.24284868810416
+ Yeongdeungpo-gu |           62 |    1.22312093115013
+(20 rows)
+
+csc343h-palaci37=> 
+
+
+--Q3 How have the implemented policies influenced the number of cases
+
+--to see the number of total cases, confirmed cases during investigation period (March-June)
+
+csc343h-badirovk=> select * from covidstatovertime order by test desc limit 1;
+    date    |  test   | negative | confirmed | released 
+------------+---------+----------+-----------+----------
+ 2020-06-30 | 1273766 |  1240157 |     12800 |    11537
+
+
+-- creating view for mating test cases, number of infected peoples with the start date of -- the policies
+
+csc343h-badirovk=> create view beforePolicy as select covidstatovertime.*, policyid, type, govpolicy, startdate  from covidstatovertime join policy on date=startdate;
+CREATE VIEW
+
+-- cresting view for end date of the policies
+csc343h-badirovk=> create view afterPolicy as select covidstatovertime.*, policyid, type, govpolicy, enddate  from covidstatovertime join policy on date=endDate;
+CREATE VIEW
+
+-- 3rd view to see the difference in number of infected people between	start and end dates
+Create select a.test - b.test as test, a.negative - b.negative as negative, a.confirmed-b.confirmed as confirmed, a.released-b.released released, a.policyid, a.type, a.govpolicy from afterpolicy a join beforepolicy b using(policyid);	
+
+-- number of tests, negative, positive cases on the start date of the policies 
+csc343h-badirovk=> select * from beforepolicy ;
+    date    |  test  | negative | confirmed | released | policyid |      type      |               govpolicy                | startdate  
+------------+--------+----------+-----------+----------+----------+----------------+----------------------------------------+------------
+ 2020-03-22 | 331780 |   308343 |      8897 |     2909 |       30 | Social         | Social Distancing Campaign             | 2020-03-22
+ 2020-04-20 | 563035 |   540380 |     10674 |     8114 |       31 | Social         | Social Distancing Campaign             | 2020-04-20
+ 2020-03-02 | 109591 |    71580 |      4212 |       31 |       35 | Education      | School Opening Delay                   | 2020-03-02
+ 2020-03-02 | 109591 |    71580 |      4212 |       31 |       36 | Education      | School Opening Delay                   | 2020-03-02
+ 2020-03-02 | 109591 |    71580 |      4212 |       31 |       37 | Education      | School Opening Delay                   | 2020-03-02
+ 2020-03-02 | 109591 |    71580 |      4212 |       31 |       38 | Education      | School Opening Delay                   | 2020-03-02
+ 2020-04-09 | 494711 |   468779 |     10423 |     6973 |       39 | Education      | School Opening with Online Class       | 2020-04-09
+ 2020-04-16 | 538775 |   513894 |     10613 |     7757 |       40 | Education      | School Opening with Online Class       | 2020-04-16
+ 2020-04-16 | 538775 |   513894 |     10613 |     7757 |       41 | Education      | School Opening with Online Class       | 2020-04-16
+ 2020-04-09 | 494711 |   468779 |     10423 |     6973 |       42 | Education      | School Opening with Online Class       | 2020-04-09
+ 2020-04-16 | 538775 |   513894 |     10613 |     7757 |       43 | Education      | School Opening with Online Class       | 2020-04-16
+ 2020-04-16 | 538775 |   513894 |     10613 |     7757 |       44 | Education      | School Opening with Online Class       | 2020-04-16
+ 2020-04-16 | 538775 |   513894 |     10613 |     7757 |       45 | Education      | School Opening with Online Class       | 2020-04-16
+ 2020-04-16 | 538775 |   513894 |     10613 |     7757 |       46 | Education      | School Opening with Online Class       | 2020-04-16
+ 2020-04-20 | 563035 |   540380 |     10674 |     8114 |       47 | Education      | School Opening with Online Class       | 2020-04-20
+ 2020-04-20 | 563035 |   540380 |     10674 |     8114 |       48 | Education      | School Opening with Online Class       | 2020-04-20
+ 2020-05-08 | 654863 |   635174 |     10822 |     9484 |       54 | Administrative | Close bars and clubs                   | 2020-05-08
+ 2020-05-21 | 788684 |   759473 |     11122 |    10135 |       56 | Administrative | Close karaoke                          | 2020-05-21
+ 2020-05-29 | 885120 |   849161 |     11402 |    10363 |       57 | Transformation | Logistics center                       | 2020-05-29
+ 2020-05-28 | 868666 |   834952 |     11344 |    10340 |       61 | Health         | Extends Tightened Quarantine Measures  | 2020-05-28
+
+
+
+-- number of tests, negative, positive cases on the end date of the policies 
+
+csc343h-badirovk=> select * from afterpolicy ;
+    date    |  test   | negative | confirmed | released | policyid |      type      |               govpolicy                |  enddate   
+------------+---------+----------+-----------+----------+----------+----------------+----------------------------------------+------------
+ 2020-04-19 |  559109 |   536205 |     10661 |     8042 |       30 | Social         | Social Distancing Campaign             | 2020-04-19
+ 2020-05-05 |  640237 |   620575 |     10804 |     9283 |       31 | Social         | Social Distancing Campaign             | 2020-05-05
+ 2020-04-06 |  466804 |   437225 |     10284 |     6598 |       35 | Education      | School Opening Delay                   | 2020-04-06
+ 2020-04-06 |  466804 |   437225 |     10284 |     6598 |       36 | Education      | School Opening Delay                   | 2020-04-06
+ 2020-04-06 |  466804 |   437225 |     10284 |     6598 |       37 | Education      | School Opening Delay                   | 2020-04-06
+ 2020-04-06 |  466804 |   437225 |     10284 |     6598 |       38 | Education      | School Opening Delay                   | 2020-04-06
+ 2020-05-20 |  776433 |   748972 |     11110 |    10066 |       39 | Education      | School Opening with Online Class       | 2020-05-20
+ 2020-05-27 |  852876 |   820550 |     11265 |    10295 |       40 | Education      | School Opening with Online Class       | 2020-05-27
+ 2020-06-03 |  956852 |   917397 |     11590 |    10467 |       41 | Education      | School Opening with Online Class       | 2020-06-03
+ 2020-05-27 |  852876 |   820550 |     11265 |    10295 |       42 | Education      | School Opening with Online Class       | 2020-05-27
+ 2020-06-03 |  956852 |   917397 |     11590 |    10467 |       43 | Education      | School Opening with Online Class       | 2020-06-03
+ 2020-06-08 | 1018214 |   982026 |     11814 |    10563 |       44 | Education      | School Opening with Online Class       | 2020-06-08
+ 2020-06-08 | 1018214 |   982026 |     11814 |    10563 |       45 | Education      | School Opening with Online Class       | 2020-06-08
+ 2020-06-03 |  956852 |   917397 |     11590 |    10467 |       46 | Education      | School Opening with Online Class       | 2020-06-03
+ 2020-06-03 |  956852 |   917397 |     11590 |    10467 |       47 | Education      | School Opening with Online Class       | 2020-06-03
+ 2020-05-27 |  852876 |   820550 |     11265 |    10295 |       48 | Education      | School Opening with Online Class       | 2020-05-27
+ 2020-06-07 | 1012769 |   974512 |     11776 |    10552 |       54 | Administrative | Close bars and clubs                   | 2020-06-07
+ 2020-06-03 |  956852 |   917397 |     11590 |    10467 |       56 | Administrative | Close karaoke                          | 2020-06-03
+ 2020-06-11 | 1066888 |  1029447 |     11947 |    10654 |       57 | Transformation | Logistics center                       | 2020-06-11
+ 2020-06-14 | 1100328 |  1066887 |     12085 |    10718 |       61 | Health         | Extends Tightened Quarantine Measures  | 2020-06-14
+(20 rows)
+
+
+--the difference in numbers see demonstrate effectiveness of the policies 
+
+csc343h-badirovk=> select * from difference ;
+  test  | negative | confirmed | released | policyid |      type      |               govpolicy                
+--------+----------+-----------+----------+----------+----------------+----------------------------------------
+ 227329 |   227862 |      1764 |     5133 |       30 | Social         | Social Distancing Campaign
+  77202 |    80195 |       130 |     1169 |       31 | Social         | Social Distancing Campaign
+ 357213 |   365645 |      6072 |     6567 |       35 | Education      | School Opening Delay
+ 357213 |   365645 |      6072 |     6567 |       36 | Education      | School Opening Delay
+ 357213 |   365645 |      6072 |     6567 |       37 | Education      | School Opening Delay
+ 357213 |   365645 |      6072 |     6567 |       38 | Education      | School Opening Delay
+ 281722 |   280193 |       687 |     3093 |       39 | Education      | School Opening with Online Class
+ 314101 |   306656 |       652 |     2538 |       40 | Education      | School Opening with Online Class
+ 418077 |   403503 |       977 |     2710 |       41 | Education      | School Opening with Online Class
+ 358165 |   351771 |       842 |     3322 |       42 | Education      | School Opening with Online Class
+ 418077 |   403503 |       977 |     2710 |       43 | Education      | School Opening with Online Class
+ 479439 |   468132 |      1201 |     2806 |       44 | Education      | School Opening with Online Class
+ 479439 |   468132 |      1201 |     2806 |       45 | Education      | School Opening with Online Class
+ 418077 |   403503 |       977 |     2710 |       46 | Education      | School Opening with Online Class
+ 393817 |   377017 |       916 |     2353 |       47 | Education      | School Opening with Online Class
+ 289841 |   280170 |       591 |     2181 |       48 | Education      | School Opening with Online Class
+ 357906 |   339338 |       954 |     1068 |       54 | Administrative | Close bars and clubs
+ 168168 |   157924 |       468 |      332 |       56 | Administrative | Close karaoke
+ 181768 |   180286 |       545 |      291 |       57 | Transformation | Logistics center
+ 231662 |   231935 |       741 |      378 |       61 | Health         | Extends Tightened Quarantine Measures 
+(20 rows)
+
+
